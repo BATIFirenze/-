@@ -1,0 +1,114 @@
+#include<iostream>
+#include<math.h> 
+using namespace std;
+
+unsigned int iv[] = { 0x7380166f, 0x4914b2b9, 0x172442d7, 0xda8a0600,
+0xa96f30bc, 0x163138aa, 0xe38dee4d, 0xb0fb0e4e };
+
+unsigned int* SM3fill(unsigned int* ctxt,unsigned int length,unsigned int* message){
+	unsigned int n=length>>9;
+	unsigned int m=length&0x1FF;
+	unsigned int j=m>>5;
+	unsigned int k=m&0x1F;
+	for(int i=0;i<16*n+j;i++)
+		ctxt[i]=message[i];
+	ctxt[16*n+j]=(message[n*16+j]<<(32-k))+pow(2,31-k);
+	for(int i=16*n+j+1;i<16*(n+1);i++)
+		ctxt[i]=0;
+	ctxt[16*(n+1)-1]=length;
+	return ctxt;
+}
+
+unsigned int rotl(unsigned int x,int n){
+	x=(x<<n)|(x>>(32-n));
+	return x;
+}
+
+unsigned int P0(unsigned int x){
+	unsigned int re=x^rotl(x,9)^rotl(x,17);
+	return re;
+}
+
+void P1(unsigned int x,unsigned int *re){
+	*re=x^rotl(x,15)^rotl(x,23);
+}
+
+unsigned int FF(int j,unsigned int x,unsigned int y,unsigned int z){
+	unsigned int re;
+	if(j>15)
+		re=(x&y)|(x&z)|(y&z);
+	else
+		re=x^y^z;
+	return re;
+}
+
+unsigned int GG(int j, unsigned int x,unsigned int y,unsigned int z){
+	unsigned int re;
+	if(j>15)
+		re=(x&y)|((~x)&z);
+	else
+		re=x^y^z;
+	return re;
+}
+
+int SM3extend(unsigned int* ww,unsigned int *w, unsigned int *ctx){
+	unsigned int temp;
+	for(int i=0;i<16;i++)
+		w[i]=ctx[i];
+	for(int j=16;j<68;j++){
+		P1(w[j-16]^w[j-9]^rotl(w[j-3],15),&temp);
+		w[j]=temp^rotl(w[j-13],7)^w[j-6];
+	}
+	for(int j=0;j<64;j++)
+		ww[j]=w[j]^w[j+4];
+	return 0;
+}
+int CF(unsigned int* w,unsigned int* ww,unsigned int* v, int j){
+	unsigned int a=v[0],b=v[1],c=v[2],d=v[3],e=v[4],f=v[5],g=v[6],h=v[7];
+	unsigned int s,t1,t2,tj;
+	if(j<=15)
+		tj=0x79cc4519;
+	else
+		tj=0x7a879d8a;
+	s=rotl((rotl(a,12)+e+rotl(tj,j)),7);
+	t1=FF(j,a,b,c)+d+(s^rotl(a,12))+ww[j];
+	t2=GG(j,e,f,g)+h+s+w[j];
+	v[0]=t1;v[1]=a;v[2]=rotl(b,9);v[3]=c;
+	v[4]=P0(t2);v[5]=e;v[6]=rotl(f,19);v[7]=g;
+	return 0;
+}
+
+int hash_sm3(unsigned int* ctx, int length,unsigned int*digest){
+	int i,j,n;
+	unsigned int *result,ww[64],w[68];
+	unsigned int v[8],temp[8];
+	ctx[0]=0x616263;
+	n=length/512+1;
+	result=new unsigned int[16*n];
+	for(i=0;i<8;i++)
+		v[i]=iv[i];
+	SM3fill(result,24,ctx);
+	SM3extend(ww,w,result);
+	for(i=0;i<n;i++){
+		for(j=0;j<8;j++)
+			temp[j]=v[j];
+		for(j=0;j<64;j++)
+			CF(w,ww,v,j);
+		for(j=0;j<8;j++)
+			digest[j]=temp[j]^v[j];
+	}
+	return 0;
+}
+
+int main(){
+	int length;
+	unsigned int *ctx,*digest;
+	length=24;
+	ctx=new unsigned int;
+	digest=new unsigned int[8];
+	*ctx=0x616263;
+	hash_sm3(ctx,length,digest);
+	for(int i=0;i<8;i++)
+		cout<<hex<<digest[i];
+	return 0;
+}
