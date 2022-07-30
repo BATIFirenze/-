@@ -1,0 +1,45 @@
+#include<iostream>
+#include "SM3.h"
+using namespace std;
+
+int main(){
+	int length;
+	unsigned int *ctx,*digest,*digest1;
+	ctx=new unsigned int;
+	digest=new unsigned int[8];
+	digest1=new unsigned int[8];
+	unsigned int id[1]={0x616263};
+	hash_sm3(id,23,digest1);
+	cout<<"对应的hash值：";
+	int i,j;
+	unsigned int k;
+	for(i=0;i<8;i++)
+		cout<<hex<<digest1[i];
+	int m=1;
+	int flag=2;
+	ctx[0]=0;
+	while(flag>0){
+		/*for(k=pow(2,m-1);k<pow(2,m);k++){
+			ctx[0]=k;
+			hash_sm3(ctx,m,digest);
+			for(i=0;i<8;i++){
+				if(digest[i]!=digest1[i])
+					break;
+			}
+			if(i==8)
+				cout<<'\n'<<hex<<ctx[0];
+		}
+		m++;*/
+		ctx[0]++;
+		hash_sm3(ctx,m,digest);
+		for(i=0;i<8;i++){
+			if(digest[i]!=digest1[i])
+				break;
+		}
+		if(i==8){
+			cout<<"\n0x"<<hex<<ctx[0];
+			flag--;
+		}		
+	}
+	return 0;		
+}
