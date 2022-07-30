@@ -1,0 +1,63 @@
+#include<iostream>
+#include<time.h>
+#include<math.h>
+#include<cstdlib>
+using namespace std;
+unsigned int c=1;
+
+unsigned long long highpow(unsigned long long x,unsigned long long n){
+    unsigned long long result=(x*x+c)%n;
+    return result;
+}
+
+unsigned long long Gcd(unsigned long long a,unsigned long long b){
+	unsigned long long k,m;
+	if(a>=b){
+		k=a/b;
+		m=a%b;
+		if(m==0)
+			return b;
+		else
+			return Gcd(b,m);
+	}
+	else{
+		k=b/a;
+		m=b%a;
+		if(m==0)
+			return b;
+		else
+			return Gcd(a,m);
+	}
+}
+
+unsigned long long Abs(unsigned long long x,unsigned long long y){
+	if(x>=y)
+		return x-y;
+	else
+		return y-x;
+}
+
+unsigned long long PollardRho(unsigned long long n){
+    if(n<2) return 0;
+ 	if(n%2==0) return 2;
+ 	srand(time(NULL));
+    unsigned long long x=(rand()%(n-2))+2;//随机生成大于1的整数
+	unsigned long long y=x;
+    while(1){
+    	unsigned long long s=1;
+        x=highpow(x,n);
+		y=highpow(y,n);
+		y=highpow(y,n);
+        s=Gcd(Abs(x,y),n);
+		if(s>1) 
+			return s;
+    }
+}
+
+int main(){
+	unsigned long long s,n;
+	n=10967535067;
+	s=PollardRho(n);
+	cout<<s<<" "<<n/s<<endl; 
+	return 0;
+}
