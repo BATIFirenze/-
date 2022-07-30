@@ -87,7 +87,7 @@ int hash_sm3(unsigned int* ctx, int length,unsigned int*digest){
 	result=new unsigned int[16*n];
 	for(i=0;i<8;i++)
 		v[i]=iv[i];
-	SM3fill(result,24,ctx);
+	SM3fill(result,length,ctx);
 	SM3extend(ww,w,result);
 	for(i=0;i<n;i++){
 		for(j=0;j<8;j++)
