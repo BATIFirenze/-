@@ -1,5 +1,5 @@
 Final assignment
-完成:Pollord_Rho实现,SM3优化,SM4查表优化,SM3生日攻击
+完成:Pollord_Rho实现,SM3优化,SM4查表优化,SM3生日攻击,SM3长度拓展攻击
 
 Pollord_Rho实现:
 Pollord_Rho的实现需要实现函数的迭代
@@ -17,3 +17,6 @@ SM4查表优化:
 使用了在线编辑器,注释掉的是实际运行代码
 其中from SM3 import * 就是引用了SM3.py(网上搜到的一个文件),即注释部分多出来的一段
 最终输出为true,即成立
+
+SM3长度拓展攻击:
+先使用SM3的代码,然后随机生成一个消息,为使得附加消息m'成立,需要匹配padding,计算secret+padding+m'的hash值,若攻击成功,hash2=hash3
