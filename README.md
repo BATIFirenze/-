@@ -1,5 +1,5 @@
 Final assignment
-完成:Pollord_Rho实现,SM3优化,SM4查表优化,SM3生日攻击,SM3长度拓展攻击
+完成:Pollord_Rho实现,SM3优化,SM4查表优化,SM3生日攻击,SM3长度拓展攻击,MerkleTree的实现
 
 Pollord_Rho实现:
 Pollord_Rho的实现需要实现函数的迭代
@@ -21,3 +21,6 @@ SM4查表优化:
 
 SM3长度拓展攻击:
 先使用SM3的代码,然后随机生成一个消息,为使得附加消息m'成立,需要匹配padding,计算secret+padding+m'的hash值,若攻击成功,hash2=hash3
+
+MerkleTree的实现：
+先实现节点,再创建树,最后通过拼接实现hash树的实现
